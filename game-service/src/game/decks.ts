@@ -9,8 +9,9 @@ class Deck {
         this.points = [acePoint, 2, 3, 4, 5, 6, 7, 8, 9, 10, jackPoint, queenPoint, kingPoint]
     }
 
-    createDeck(howManyDecks: number) {
+    createDeck(howManyDecks: number, additionalCards?: object[]) {
         let deck:object[] = []
+        
         for(let d = 0; d < howManyDecks; d++) {
             // to create a single deck
             for(let i = 0; i < this.suits.length; i++) {
@@ -20,6 +21,7 @@ class Deck {
             }
         }
 
+        if(additionalCards) return [...deck, ...additionalCards]
         return deck;
     }
 
