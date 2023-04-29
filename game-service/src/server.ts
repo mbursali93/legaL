@@ -1,6 +1,12 @@
-import Deck from "./game/decks";
+import { Server } from "socket.io";
+ import cors from "cors"
+import { SocketServer } from "./sockets/socket";
 
-const deck = new Deck(1,1,1,1)
-const additionalCards = []
+new SocketServer(3001, {
+    cors: {
+        
+    }
+})
 
-console.log(deck.createDeck(1))
+
+
