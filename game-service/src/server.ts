@@ -1,12 +1,13 @@
 import { Server } from "socket.io";
  import cors from "cors"
-import { SocketServer } from "./sockets/socket";
+import SimpleServer from "./sockets/simpleTest";
 
-new SocketServer(3001, {
+new SimpleServer(3001, {
     cors: {
         
     }
 })
 
+console.log("server is running")
 
 

@@ -3,7 +3,7 @@ class Deck {
     values: string[];
     points: number[];
 
-    constructor(acePoint: number, jackPoint: number, queenPoint: number, kingPoint: number) {
+    constructor(acePoint: number = 11, jackPoint: number = 10, queenPoint: number = 10, kingPoint: number = 10) {
         this.suits = ["Hearts", "Aces", "Clubs", "Diamonds"];
         this.values = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"];
         this.points = [acePoint, 2, 3, 4, 5, 6, 7, 8, 9, 10, jackPoint, queenPoint, kingPoint]
