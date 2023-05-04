@@ -12,6 +12,11 @@ class Utils {
         return await bcrypt.hash(password, 10)
     }
 
+    async comparePassword(inputPassword: string, userPassword:string ) :Promise<boolean> {
+        return await bcrypt.compare(inputPassword, userPassword)
+        
+    }
+
     async generateAccessToken(id:string) :Promise<string> {
         return await jwt.sign({ id }, process.env.JWT_ACCESS || "", { expiresIn: "11m" })
     }

@@ -11,6 +11,7 @@ class AuthController {
         try {
             const id = req.body.id;
            const user = await service.register(req.body)
+           if(!user) throw new Error("Something went wrong")
 
             const accessToken = await utils.generateAccessToken(id)
             const refreshToken = await utils.generateRefreshToken(id)
@@ -25,7 +26,29 @@ class AuthController {
 
         } catch(e:any) {
             
-            console.log(e)
+            
+            res.status(500).json(e.message)
+        }
+    }
+
+    async login(req: Request, res: Response) {
+        try {
+        
+            const user = await service.login(req.body.email, req.body.password)
+
+            const accessToken = await utils.generateAccessToken(user.id)
+            const refreshToken = await utils.generateRefreshToken(user.id)
+
+            res.cookie("refreshToken", refreshToken, {
+                path: "/",
+                httpOnly: true,
+                maxAge: 1000 * 60 * 60 * 24 * 7 // 7 days
+            })
+
+            const { password, iban, ...userInfo } = user;
+
+            res.status(200).json({ ...userInfo, accessToken })
+        } catch(e:any){
             res.status(500).json(e.message)
         }
     }

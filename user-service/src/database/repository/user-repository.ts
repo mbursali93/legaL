@@ -9,15 +9,22 @@ class UserRepository {
     constructor() {
         this.db = new PgDatabase()
     }
-    async saveUser(user: IUser) {
-        try {
-            const { id, username, email, password, iban } = user
-            const savedUser = await db.pool.query(query.register, [id, email, username, password, iban])
-            if(!savedUser.rows[0]) throw new Error("cgge")
-            return savedUser.rows[0];
-        } catch(e:any) {
-            throw e
-        }
+    
+    async saveUser(user: IUser) :Promise<IUser> {
+       
+            const { id, username, email, password, iban, last_online } = user
+            const savedUser = await this.db.pool.query(query.register, [id, email, username, password, iban, last_online])
+            
+           return savedUser.rows[0];
+        
+    }
+
+    async getUserByEmail(email: string) {
+        return await this.db.pool.query(query.getUserByEmail, [email])
+    }
+
+    async updateLastOnline(id:string) {
+
     }
 }
 
