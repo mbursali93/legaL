@@ -1,6 +1,6 @@
 import { v4 } from "uuid"
 import bcrypt from "bcrypt"
-import jwt from "jsonwebtoken"
+import jwt, { JwtPayload } from "jsonwebtoken"
 
 class Utils {
 
@@ -23,6 +23,11 @@ class Utils {
 
     async generateRefreshToken(id:string) :Promise<string> {
         return await jwt.sign({ id }, process.env.JWT_REFRESH || "", { expiresIn: "7d" })
+    }
+
+    async getNewToken(token:string) {
+        const user = await jwt.verify(token, process.env.JWT_ACCESS || "") as JwtPayload
+        return await this.generateAccessToken(user.id)
     }
 }
 

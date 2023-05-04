@@ -52,6 +52,26 @@ class AuthController {
             res.status(500).json(e.message)
         }
     }
+
+    async logout(req: Request, res: Response) {
+        try {
+            res.clearCookie("refreshToken", { path: "/" })
+            res.status(203).json("Logged out")
+        } catch(e:any) {
+            res.status(500).json(e.message)
+        }
+    }
+
+    async refreshToken(req: Request, res: Response) {
+        try {
+            const token = req.cookies.refreshToken
+            if(!token) return res.status(403).json("no token to be found")
+            const accessToken = await utils.getNewToken(token)
+            res.status(200).json(token)
+        } catch(e:any) {
+            res.status(500).json(e.message)
+        }
+    }
 }
 
 export default AuthController
