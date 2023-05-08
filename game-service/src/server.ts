@@ -1,12 +1,7 @@
-import { Server } from "socket.io";
- import cors from "cors"
-import SimpleServer from "./sockets/simpleTest";
+import KirmastiServer from "./sockets/kirmasti";
 
-new SimpleServer(3001, {
-    cors: {
-        
-    }
-})
+ new KirmastiServer(3001)
+
 
 console.log("server is running")
 

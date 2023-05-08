@@ -24,7 +24,7 @@ class SimpleServer {
       let readyPlayers:any[] = []
       let roomReady: any;
       
-     socket.on("kirmasti-join", (roomId:string)=> {
+     socket.on("test-join", (roomId:string)=> {
       
       socket.join("room1")
       console.log(`${socket.id} joined`)
@@ -39,7 +39,7 @@ class SimpleServer {
          player1 = game.dealCards(1)
          player2 = game.dealCards(1)
         console.log("game starts")
-        this.io.to("room1").emit("kirmasti-dealCards", [player1, player2])
+        this.io.to("room1").emit("test-dealCards", [player1, player2])
         
         
       }
@@ -47,7 +47,7 @@ class SimpleServer {
 
      // players bet
 
-     socket.on("kirmasti-bet", (data)=> {
+     socket.on("test-bet", (data)=> {
       
         if(roomUsers.includes(socket.id)) socket.join("room1ready")
         roomReady = this.io.sockets.adapter.rooms.get("room1ready")
