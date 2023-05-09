@@ -4,6 +4,7 @@ import Deck from "../game/decks";
 import CardLogic from "../game/cardLogics";
 
 const room = { id: "room-id", smallBet: 10, bigBet: 20, maxPlayer:4 }
+interface ICard { value: string, suit: string, point: number}
 
 const joinMutex = new Mutex()
 const betMutex = new Mutex()
@@ -13,8 +14,10 @@ class KirmastiServer {
   private game: CardLogic;
   private deck: object[];
   private roomPlayers: any[]; // could use number or can be cancelled
-  private dealFlag: boolean
+  private dealFlag: boolean;
+  private betFlag: boolean;
   private dealedPlayers: any[];
+  private winnerPlayers: any[]
 
   constructor(port: number) {
     this.io = new Server(port, { cors: { } })
@@ -22,11 +25,14 @@ class KirmastiServer {
     this.game = new CardLogic(this.deck)
     this.roomPlayers = []
     this.dealFlag = false;
+    this.betFlag = false;
     this.dealedPlayers = []
+    this.winnerPlayers = []
 
     this.io.on("connection", (socket: Socket)=> {
       try {
         console.log(socket.id)
+        console.log(this.dealFlag)
 
         // Join table
         
@@ -56,8 +62,10 @@ class KirmastiServer {
                   for(let i = 0; i < this.roomPlayers.length; i++) {
                     this.dealedPlayers[i].cards = this.game.dealCards(2)
                     
+                    
                   }
-                  if(this.dealedPlayers.length === 1) return this.io.to("room-id").emit("kirmasti-setWinner") // handle later
+                  // if(this.dealedPlayers.length === 1) return this.io.to("room-id").emit("kirmasti-setWinner") // handle later
+                  
                   this.io.to("room-id").emit("kirmasti-getCards", this.dealedPlayers)
                   this.dealFlag = true;
                 }
@@ -71,8 +79,30 @@ class KirmastiServer {
                 let playerIndex = this.dealedPlayers.findIndex(p=> p.id === socket.id)
                 this.dealedPlayers[playerIndex].hasBet = true
               }
-            })
 
+              
+
+              setTimeout(()=> {
+                if(!this.betFlag) {
+                  const middleCard:any = this.game.pickCard()
+                  
+                  for(const player of this.dealedPlayers) {
+                    if(player.hasBet) {
+                      let playerSortedCards = player.cards.sort((a:ICard, b:ICard)=> a.point - b.point)
+                    
+                      if(middleCard.point > playerSortedCards[0].point && middleCard.point < playerSortedCards[1].point) {
+                        this.winnerPlayers.push(player)
+                       
+                      }
+                    }
+                  }
+
+                  
+                }
+                this.betFlag = true;
+              }, 10000)
+
+            })
           })
 
           //end of the event
