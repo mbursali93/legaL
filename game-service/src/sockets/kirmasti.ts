@@ -31,18 +31,15 @@ class KirmastiServer {
 
     this.io.on("connection", (socket: Socket)=> {
       try {
-        console.log(socket.id)
-        console.log(this.dealFlag)
-
+        
         // Join table
         
         socket.on("kirmasti-join", (data) => {
           joinMutex.runExclusive(() => {
             socket.join("room-id");
-            console.log(data);
-            console.log("someone joined");
+           
             this.roomPlayers.push({ id: socket.id, hasBet: false, cards: [] });
-            console.log(this.roomPlayers);
+            
           });
         });
 
@@ -54,8 +51,6 @@ class KirmastiServer {
               
                 this.dealedPlayers.push({ id: socket.id, hasBet: false, cards: [] })
 
-                // cards dealing for each player
-                // money bet
             
               setTimeout(()=> {
                 if(!this.dealFlag) {
@@ -68,6 +63,7 @@ class KirmastiServer {
                   
                   this.io.to("room-id").emit("kirmasti-getCards", this.dealedPlayers)
                   this.dealFlag = true;
+                  this.betFlag = false;
                 }
               }, 10000)
             }
@@ -78,13 +74,13 @@ class KirmastiServer {
               if(this.dealFlag && this.dealedPlayers.length > 1) {
                 let playerIndex = this.dealedPlayers.findIndex(p=> p.id === socket.id)
                 this.dealedPlayers[playerIndex].hasBet = true
+                console.log(`${socket.id} has bet`)
               }
-
-              
 
               setTimeout(()=> {
                 if(!this.betFlag) {
                   const middleCard:any = this.game.pickCard()
+                  console.log(middleCard)
                   
                   for(const player of this.dealedPlayers) {
                     if(player.hasBet) {
@@ -96,10 +92,23 @@ class KirmastiServer {
                       }
                     }
                   }
-
-                  
                 }
+
+                if(this.winnerPlayers.length !== 0) {
+                  // handle winners
+                  console.log(this.winnerPlayers)
+
+                } else {
+                  console.log("no winners yet")
+                }
+
+
+                //Reset game 
+                
                 this.betFlag = true;
+                this.dealFlag = false;
+                this.dealedPlayers = []
+                this.game.suffle() 
               }, 10000)
 
             })
